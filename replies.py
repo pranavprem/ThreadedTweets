@@ -1,96 +1,34 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+"""Print replies to one tweet as line-oriented JSON.
 
+This is the archive interface the 2017 script's docstring described
+(``replies.py tweets.json > replies.json``). The root tweet is not
+printed. Each reply is one JSON object.
+
+    python replies.py --file examples/thread.jsonl > replies.jsonl
+    python replies.py TWEET_ID > replies.jsonl
 """
 
-Twitter's API doesn't allow you to get replies to a particular tweet. Strange
-but true. But you can use Twitter's Search API to search for tweets that are
-directed at a particular user, and then search through the results to see if 
-any are replies to a given tweet. You probably are also interested in the
-replies to any replies as well, so the process is recursive. The big caveat 
-here is that the search API only returns results for the last 7 days. So 
-you'll want to run this sooner rather than later.
-
-replies.py will read a line oriented JSON file of tweets and look for replies
-using the above heuristic. Any replies that are discovered will be written as
-line oriented JSON to stdout:
-
-    ./replies.py tweets.json > replies.json
-
-It also writes a log to replies.log if you are curious what it is doing...which
-can be handy since it will sleep for periods of time to work within the 
-Twitter API quotas.
-
-PS. you'll need to:
-
-    pip install python-twitter
-
-and then set the following environment variables for it to work:
-
-  - CONSUMER_KEY
-  - CONSUMER_SECRET
-  - ACCESS_TOKEN
-  - ACCESS_TOKEN_SECRET
-
-"""
+from __future__ import annotations
 
 import sys
-import json
-import time
-import logging
-import twitter
-try:
-    from urllib.parse import urlparse
-except ImportError:
-     from urlparse import urlparse
-import urllib
 
-from os import environ as e
+from threadedtweets.cli import load_conversation, parse_args
+from threadedtweets.model import dump_tweet
+from threadedtweets.x_client import XApiError
 
-t = twitter.Api(
-    consumer_key=e["CONSUMER_KEY"],
-    consumer_secret=e["CONSUMER_SECRET"],
-    access_token_key=e["ACCESS_TOKEN"],
-    access_token_secret=e["ACCESS_TOKEN_SECRET"],
-    sleep_on_rate_limit=True
-)
 
-def tweet_url(t):
-    return "https://twitter.com/%s/status/%s" % (t.user.screen_name, t.id)
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv, prog="replies.py")
+    try:
+        _root, replies = load_conversation(args)
+    except (XApiError, ValueError, OSError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    for reply in replies:
+        print(dump_tweet(reply))
+    return 0
 
-def get_tweets(filename):
-    for line in open(filename):
-        yield twitter.Status.NewFromJsonDict(json.loads(line))
-
-def get_replies(tweet):
-    user = tweet.user.screen_name
-    tweet_id = tweet.id
-    max_id = None
-    logging.info("looking for replies to: %s" % tweet_url(tweet))
-    while True:
-        q = urllib.urlencode({"q": "to:%s" % user})
-        try:
-            replies = t.GetSearch(raw_query=q, since_id=tweet_id, max_id=max_id, count=20)
-            logging.info("size of replies == %s" % len(replies))
-        except twitter.error.TwitterError as e:
-            logging.error("caught twitter api error: %s", e)
-            time.sleep(60)
-            continue
-        for reply in replies:
-            logging.info("examining: %s" % tweet_url(reply))
-            if reply.in_reply_to_status_id == tweet_id:
-                logging.info("found reply: %s" % tweet_url(reply))
-                yield reply
-                # recursive magic to also get the replies to this reply
-                for reply_to_reply in get_replies(reply):
-                    yield reply_to_reply
-            max_id = reply.id
-        if len(replies) != 100:
-            break
 
 if __name__ == "__main__":
-    logging.basicConfig(filename="replies.log", level=logging.INFO)
-    tweets_file = []
-    tweets_file.append(t.GetStatus("909922763774861314"))
-    for tweet in tweets_file:
-        for reply in get_replies(tweet):
-            print(reply.AsJsonString())
+    raise SystemExit(main())

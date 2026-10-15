@@ -1,29 +1,30 @@
-from twitter_handler import twitter_handler
-import tweepy
-import logging
+"""Recursive reply collector started in the last 2017 commit.
 
-class tweet_processor(object):
-    def __init__(self):
-        self.handler = twitter_handler()
-        logging.basicConfig(filename="replies.log", level=logging.INFO)
+The original class extended the list it was iterating and treated every
+search hit as a reply, so nested replies were duplicated and mentions
+were walked as if they were replies. Collection now goes through
+``collect_replies``, which keeps a tweet only when it replies to the
+parent and records each id once.
+"""
 
-    def get_required_tweets(self,tweet):
-        user = tweet.user.screen_name
-        tweet_id = tweet.id
-        max_id = None
-        replies = []
-        tweets = self.handler.get_tweets(user,tweet_id,max_id)
-        logging.info(tweets)
-        try:
-            replies.extend(tweets)
-        except TypeError:
-            replies.append(tweets)
-        logging.info("size of replies == %s" % len(replies))
-        if len(replies) > 0:
-            for reply in replies:
-                replies_to_reply = self.get_required_tweets(reply)
-                if replies_to_reply is not None:
-                    replies.extend(replies_to_reply)
-        else:
-            return None
-        return replies
+from __future__ import annotations
+
+from threadedtweets.collect import MAX_DEPTH, ReplySearch, collect_replies
+from threadedtweets.model import Tweet, coerce_tweet
+from twitter_handler import TwitterHandler
+
+
+class TweetProcessor:
+    def __init__(self, handler: ReplySearch | None = None):
+        self.handler = handler if handler is not None else TwitterHandler()
+
+    def get_required_tweets(
+        self,
+        tweet: object,
+        max_depth: int = MAX_DEPTH,
+    ) -> list[Tweet]:
+        root = coerce_tweet(tweet)
+        return collect_replies(root, self.handler, max_depth=max_depth)
+
+
+tweet_processor = TweetProcessor

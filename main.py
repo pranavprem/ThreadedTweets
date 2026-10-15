@@ -1,22 +1,34 @@
-from tweet_processor import tweet_processor
-import tweepy
-from os import environ as e
+#!/usr/bin/env python3
+"""Print replies to one tweet as an indented thread.
 
-auth = tweepy.AppAuthHandler(e["CONSUMER_KEY"], e["CONSUMER_SECRET"])
-api = tweepy.API(auth, wait_on_rate_limit=True,
- 				                     wait_on_rate_limit_notify=True)
+Offline, from an archive:
 
-tp = tweet_processor()
-req = tp.get_required_tweets(api.get_status(910002272825831425))
-print len(req)
-for tweet in req:
-    print str(tweet.id) + " ---- " + str(tweet.in_reply_to_status_id)
+    python main.py --file examples/thread.jsonl
+
+Live, when X_BEARER_TOKEN can call recent search:
+
+    python main.py TWEET_ID
+"""
+
+from __future__ import annotations
+
+import sys
+
+from threadedtweets.cli import load_conversation, parse_args
+from threadedtweets.model import build_thread, render_thread
+from threadedtweets.x_client import XApiError
 
 
-# from twitter_handler import twitter_handler
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv, prog="main.py")
+    try:
+        root, replies = load_conversation(args)
+    except (XApiError, ValueError, OSError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(render_thread(build_thread(root, replies)), end="")
+    return 0
 
-# handler = twitter_handler()
-# tweet = api.get_status(909950433891827712)
-# print tweet.user.screen_name
-# print tweet.id
-# print len(handler.get_tweets(tweet.user.screen_name,tweet.id,None))
+
+if __name__ == "__main__":
+    raise SystemExit(main())
