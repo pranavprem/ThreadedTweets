@@ -22,9 +22,9 @@ def parse_args(argv: list[str] | None = None, *, prog: str) -> argparse.Namespac
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "examples:\n"
-            "  python main.py --file examples/thread.jsonl\n"
-            "  python replies.py --file examples/thread.jsonl > replies.jsonl\n"
-            "  python main.py TWEET_ID\n"
+            "  python3 main.py --file examples/thread.jsonl\n"
+            "  python3 replies.py --file examples/thread.jsonl > replies.jsonl\n"
+            "  python3 main.py TWEET_ID\n"
         ),
     )
     parser.add_argument(

@@ -3,11 +3,11 @@
 
 Offline, from an archive:
 
-    python main.py --file examples/thread.jsonl
+    python3 main.py --file examples/thread.jsonl
 
 Live, when X_BEARER_TOKEN can call recent search:
 
-    python main.py TWEET_ID
+    python3 main.py TWEET_ID
 """
 
 from __future__ import annotations

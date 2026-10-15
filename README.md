@@ -23,10 +23,8 @@ The first `replies.py` is [Ed Summers' script of the same name](https://gist.git
 Python 3.11 or newer. The program uses the standard library only. Tests and lint use the pins in `requirements-dev.txt`.
 
 ```bash
-python3 -m venv .venv
-. .venv/bin/activate
-python main.py --file examples/thread.jsonl
-python replies.py --file examples/thread.jsonl
+python3 main.py --file examples/thread.jsonl
+python3 replies.py --file examples/thread.jsonl
 ```
 
 ### Offline, from a JSONL archive
@@ -51,8 +49,8 @@ A reply whose id is lower than its parent's is ignored. The 2017 search used `si
 
 ```bash
 export X_BEARER_TOKEN=...   # see .env.example; the program does not read that file
-python main.py TWEET_ID
-python replies.py TWEET_ID
+python3 main.py TWEET_ID
+python3 replies.py TWEET_ID
 ```
 
 What that call actually does:
@@ -69,7 +67,7 @@ v2 search also accepts a `conversation_id:` operator that returns a whole thread
 
 ## Sample
 
-`python main.py --file examples/thread.jsonl` prints:
+`python3 main.py --file examples/thread.jsonl` prints:
 
 ```text
 ada (100)
@@ -123,6 +121,8 @@ tests/                  walk, client, and both commands
 ## Checks
 
 ```bash
+python3 -m venv .venv
+. .venv/bin/activate
 pip install -r requirements-dev.txt
 ruff check .
 ruff format --check .

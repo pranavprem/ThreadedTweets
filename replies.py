@@ -5,8 +5,8 @@ This is the archive interface the 2017 script's docstring described
 (``replies.py tweets.json > replies.json``). The root tweet is not
 printed. Each reply is one JSON object.
 
-    python replies.py --file examples/thread.jsonl > replies.jsonl
-    python replies.py TWEET_ID > replies.jsonl
+    python3 replies.py --file examples/thread.jsonl > replies.jsonl
+    python3 replies.py TWEET_ID > replies.jsonl
 """
 
 from __future__ import annotations

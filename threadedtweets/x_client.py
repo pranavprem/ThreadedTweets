@@ -39,7 +39,7 @@ MISSING_TOKEN = (
     "search (GET /2/tweets/search/recent) and needs a bearer token with "
     "credit-metered read access. Twitter API v1.1 standard search, which "
     "this project called in 2017, was retired in September 2023. Offline "
-    "mode needs no token: python main.py --file examples/thread.jsonl"
+    "mode needs no token: python3 main.py --file examples/thread.jsonl"
 )
 LEGACY_NOTE = (
     " CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, and ACCESS_TOKEN_SECRET "

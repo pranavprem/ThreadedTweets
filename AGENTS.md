@@ -24,11 +24,11 @@ pip install -r requirements-dev.txt
 ruff check .
 ruff format .
 pytest
-python main.py --file examples/thread.jsonl
-python replies.py --file examples/thread.jsonl
+python3 main.py --file examples/thread.jsonl
+python3 replies.py --file examples/thread.jsonl
 ```
 
-CI (`.github/workflows/ci.yml`) installs `requirements-dev.txt` on Python 3.12 and runs `ruff check`, `ruff format --check`, and `pytest`.
+CI (`.github/workflows/ci.yml`) installs `requirements-dev.txt` on Python 3.12 and runs `ruff check`, `ruff format --check`, and `pytest`. `pyproject.toml` sets `pythonpath = ["."]` so pytest can import `threadedtweets` and `main`.
 
 There is no runtime dependency file. The program uses the standard library. Do not add a package unless a change truly needs it.
 
@@ -36,7 +36,7 @@ Live lookup, only with a token you are willing to spend credits on:
 
 ```bash
 export X_BEARER_TOKEN=...
-python main.py TWEET_ID
+python3 main.py TWEET_ID
 ```
 
 ## Conventions
