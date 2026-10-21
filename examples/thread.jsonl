@@ -1,0 +1,6 @@
+# Sample conversation for the README and the tests. These are not real tweets.
+{"id": 100, "text": "What is the best way to read a long Twitter argument?", "user": {"screen_name": "ada"}, "in_reply_to_status_id": null}
+{"id": 101, "text": "Start at the root and indent the replies.", "user": {"screen_name": "grace"}, "in_reply_to_status_id": 100}
+{"id": 102, "text": "Like a comment tree.", "user": {"screen_name": "ada"}, "in_reply_to_status_id": 101}
+{"id": 103, "text": "Search only goes back about a week, though.", "user": {"screen_name": "linus"}, "in_reply_to_status_id": 100}
+{"id": 104, "text": "This one replies to the nested reply.", "user": {"screen_name": "grace"}, "in_reply_to_status_id": 102}

@@ -1,0 +1,4 @@
+# Runtime code uses the Python 3.11+ standard library only.
+# These pins are the formatter, linter, and test runner used by CI.
+pytest==9.1.1
+ruff==0.17.0

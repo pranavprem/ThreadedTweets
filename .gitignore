@@ -1,0 +1,22 @@
+# Virtualenvs. The 2017 env/ directory was committed; it stays ignored now.
+env/
+.venv/
+venv/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Logs and local secrets. replies.log was the 2017 script's log file.
+*.log
+.env
+.env.*
+!.env.example
+.python-version
